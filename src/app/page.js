@@ -1,10 +1,13 @@
-'use client'
+'use client';
 import { useRef, useState } from 'react';
 
 export default function Home() {
   const mediaRecorderRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
   const [audioURL, setAudioURL] = useState(null);
+  const [audioBlob, setAudioBlob] = useState(null);
+  const [transcript, setTranscript] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleStartRecording = async () => {
     try {
@@ -17,9 +20,10 @@ export default function Home() {
       };
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-        const url = URL.createObjectURL(audioBlob);
+        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+        const url = URL.createObjectURL(blob);
         setAudioURL(url);
+        setAudioBlob(blob);
       };
 
       mediaRecorder.start();
@@ -34,6 +38,35 @@ export default function Home() {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
+    }
+  };
+
+  const handleTranscribe = async () => {
+    if (!audioBlob) return;
+
+    setLoading(true);
+    setTranscript('');
+
+    const formData = new FormData();
+    formData.append('audio', audioBlob, 'recording.webm');
+
+    try {
+      const res = await fetch('/api/transcribe', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (data.text) {
+        setTranscript(data.text);
+      } else {
+        setTranscript('⚠️ Transcription failed.');
+      }
+    } catch (err) {
+      console.error('Error transcribing audio:', err);
+      setTranscript('⚠️ An error occurred.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -60,9 +93,22 @@ export default function Home() {
       </div>
 
       {audioURL && (
-        <div className="mt-6">
-          <h2 className="font-semibold">🎧 Your Recording:</h2>
-          <audio controls src={audioURL} className="mt-2" />
+        <div className="mt-6 flex flex-col items-center gap-4">
+          <audio controls src={audioURL} />
+          <button
+            onClick={handleTranscribe}
+            disabled={loading}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+          >
+            {loading ? 'Transcribing...' : 'Transcribe Audio'}
+          </button>
+        </div>
+      )}
+
+      {transcript && (
+        <div className="mt-4 max-w-xl text-center">
+          <h2 className="text-lg font-semibold mb-2">📝 Transcript:</h2>
+          <p className="bg-gray-100 p-4 rounded">{transcript}</p>
         </div>
       )}
     </main>
