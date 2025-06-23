@@ -1,6 +1,5 @@
 # VocalCoach AI
 
-![VocalCoach AI Logo](public/logo.jpeg)
 
 **VocalCoach AI** is your personal, AI-powered communication coach. Instantly transcribe your speech, receive actionable feedback, and get professional rephrasings—all in a beautiful, user-friendly interface.
 
