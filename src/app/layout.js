@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: 'AI Meeting Coach',
+  title: 'VocalCoach AI',
   description: 'Personalized voice feedback after your meetings',
 };
 

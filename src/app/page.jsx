@@ -185,8 +185,11 @@ const App = () => {
       </div>
       {/* Main Card */}
       <div className="w-full max-w-2xl bg-white dark:bg-neutral-800 rounded-xl shadow-lg p-8">
-        <h2 className="text-2xl font-bold text-neutral-800 dark:text-white mb-2">AI Coach</h2>
-        <p className="text-neutral-600 dark:text-neutral-300 mb-4">Audio to text</p>
+        <div className="flex justify-center mb-4">
+          <img src="/logo.jpeg" alt="VocalCoach AI Logo" className="h-20 w-auto" />
+        </div>
+        <h2 className="text-2xl font-bold text-neutral-800 dark:text-white mb-2"> VocalCoach AI</h2>
+        <p className="text-neutral-600 dark:text-neutral-300 mb-4">Turn your voice into actionable communication insights</p>
         <div
           className="min-h-[100px] border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 rounded-md p-4 mb-4 cursor-pointer text-neutral-800 dark:text-neutral-100"
           onClick={() => setTextToCopy(transcript)}
