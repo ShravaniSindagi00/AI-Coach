@@ -34,3 +34,13 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+ What’s Unique in My Project
+
+ **End-to-End Voice Coaching Workflow**
+   - **Live audio-to-text:** Users speak, and their speech is transcribed in real time.
+   - **Automated feedback:** The transcript is analyzed and actionable, structured feedback is generated instantly.
+   - **Professional rephrasing:** Users get a "how you should say it" version, not just critique.
+   - **History & download:** Users can review, download, and learn from their past sessions.
+   - **Transcript highlighting:** Problematic phrases are visually highlighted for targeted improvement.
+   - **User-friendly UI:** One-click recording, feedback, and history—all in a single, focused interface.
