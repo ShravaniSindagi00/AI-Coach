@@ -81,6 +81,4 @@ Feel free to replace it with your own branding!
 ---
 
 
----
-
 **Ready to become a better communicator? Try VocalCoach AI now!**
