@@ -80,9 +80,6 @@ Feel free to replace it with your own branding!
 
 ---
 
-## 📄 License
-
-MIT
 
 ---
 
