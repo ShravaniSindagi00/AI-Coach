@@ -1,47 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# VocalCoach AI
 
-## Getting Started
+![VocalCoach AI Logo](public/logo.jpeg)
 
-First, run the development server:
+**VocalCoach AI** is your personal, AI-powered communication coach. Instantly transcribe your speech, receive actionable feedback, and get professional rephrasings—all in a beautiful, user-friendly interface.
 
+---
+
+## 🚀 Features
+
+- **Live audio-to-text:** Speak and see your words transcribed in real time.
+- **Automated feedback:** Instantly receive structured, actionable feedback on your communication.
+- **Professional rephrasing:** Get a polished version of your speech—see how you could say it better.
+- **History & download:** Review, download, and learn from your past sessions.
+- **Transcript highlighting:** Problematic phrases are visually highlighted for targeted improvement.
+- **User-friendly UI:** One-click recording, feedback, and history—all in a single, focused interface.
+
+---
+
+## 🦄 What Makes VocalCoach AI Unique?
+
+- **End-to-End Voice Coaching Workflow:** From speech to feedback to improvement, all in one place.
+- **Actionable, Structured Feedback:** No more vague advice—get clear, numbered suggestions.
+- **Professional Rephrasing:** Not just critique, but a model answer for your communication.
+- **Session History:** Track your progress and revisit past feedback.
+- **Visual Learning:** Instantly spot issues in your transcript with smart highlighting.
+
+---
+
+## 🛠️ Getting Started
+
+### 1. **Clone the repository**
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/yourusername/vocalcoach-ai.git
+cd vocalcoach-ai
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. **Install dependencies**
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### 3. **Set up environment variables**
+- Create a `.env.local` file in the root directory.
+- Add your Gemini API key:
+  ```
+  GEMINI_API_KEY=your_gemini_api_key_here
+  ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. **Run the development server**
+```bash
+npm run dev
+```
+Visit [http://localhost:3000](http://localhost:3000) to use the app.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🖼️ Logo
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The project logo is located at `public/logo.jpeg`.  
+Feel free to replace it with your own branding!
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🤖 Built With
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- [Next.js](https://nextjs.org/)
+- [React](https://react.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Gemini API (Google)](https://ai.google.dev/)
+- [react-speech-recognition](https://www.npmjs.com/package/react-speech-recognition)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details. <br>
-<hr>
+---
 
- What’s Unique in My Project
+## 💡 Future Ideas
 
- **End-to-End Voice Coaching Workflow**
-   - **Live audio-to-text:** Users speak, and their speech is transcribed in real time.
-   - **Automated feedback:** The transcript is analyzed and actionable, structured feedback is generated instantly.
-   - **Professional rephrasing:** Users get a "how you should say it" version, not just critique.
-   - **History & download:** Users can review, download, and learn from their past sessions.
-   - **Transcript highlighting:** Problematic phrases are visually highlighted for targeted improvement.
-   - **User-friendly UI:** One-click recording, feedback, and history—all in a single, focused interface.
+- Upload and analyze meeting recordings (Zoom, Teams, Google Meet)
+- Progress tracking and analytics
+- Team dashboards and sharing
+- Multilingual support
+
+---
+
+## 📄 License
+
+MIT
+
+---
+
+**Ready to become a better communicator? Try VocalCoach AI now!**
