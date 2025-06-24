@@ -161,6 +161,19 @@ const App = () => {
         {showHistory && (
           <div className="bg-white dark:bg-neutral-800 rounded-lg shadow p-4 max-h-64 overflow-y-auto">
             {history.length === 0 && <div className="text-neutral-500">No history yet.</div>}
+            {history.length > 0 && (
+              <button
+                className="mb-2 px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm float-right"
+                onClick={() => {
+                  setHistory([]);
+                  if (typeof window !== 'undefined') {
+                    localStorage.removeItem(HISTORY_KEY);
+                  }
+                }}
+              >
+                Delete History
+              </button>
+            )}
             {history.map((item, idx) => (
               <div
                 key={idx}
