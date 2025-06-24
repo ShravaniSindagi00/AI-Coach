@@ -17,8 +17,22 @@ const AuthStatus = () => {
     };
   }, []);
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+  };
+
   if (user) {
-    return <div className="mb-4 text-green-700">Welcome, {user.email}!</div>;
+    return (
+      <div className="mb-4 text-green-700 flex items-center gap-4">
+        Welcome, {user.email}!
+        <button
+          onClick={handleLogout}
+          className="ml-4 px-3 py-1 bg-gray-300 hover:bg-gray-400 text-black rounded"
+        >
+          Logout
+        </button>
+      </div>
+    );
   }
   return <GoogleLoginButton />;
 };

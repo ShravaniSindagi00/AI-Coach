@@ -8,7 +8,8 @@ const HistorySection = ({
   setFeedback,
   setDateTime,
   setHistory,
-  HISTORY_KEY
+  onClearHistory,
+  user
 }) => (
   <div className="w-full max-w-2xl mb-4">
     <button
@@ -23,12 +24,7 @@ const HistorySection = ({
         {history.length > 0 && (
           <button
             className="mb-2 px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm float-right"
-            onClick={() => {
-              setHistory([]);
-              if (typeof window !== 'undefined') {
-                localStorage.removeItem(HISTORY_KEY);
-              }
-            }}
+            onClick={onClearHistory}
           >
             Delete History
           </button>

@@ -10,11 +10,14 @@ import TranscriptCard from "./components/TranscriptCard";
 import ControlButtons from "./components/ControlButtons";
 import FeedbackSection from "./components/FeedbackSection";
 import AuthStatus from "./components/AuthStatus";
+import { supabase } from "../utils/supabaseClient";
+import GoogleLoginButton from "./components/GoogleLoginButton";
 
 const HISTORY_KEY = 'ai_coach_history';
 
 const App = () => {
   const [isClient, setIsClient] = useState(false);
+  const [user, setUser] = useState(null);
   const [textToCopy, setTextToCopy] = useState("");
   const [isCopied, setCopied] = useClipboard(textToCopy, { successDuration: 1000 });
   const [feedback, setFeedback] = useState("");
@@ -27,6 +30,20 @@ const App = () => {
   const [isRecording, setIsRecording] = useState(false);
   const MAX_RECORDING_TIME = 30000; // 30 seconds
 
+  const fetchHistoryFromSupabase = async (userId) => {
+    const { data, error } = await supabase
+      .from('history')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(20);
+    if (error) {
+      console.error('Error fetching history:', error);
+      return [];
+    }
+    return data || [];
+  };
+
   useEffect(() => {
     setIsClient(true);
     // Set current date/time in desired format
@@ -35,11 +52,28 @@ const App = () => {
       day: '2-digit', month: 'short', year: 'numeric',
       hour: '2-digit', minute: '2-digit', hour12: true
     }));
-    // Load history from localStorage
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem(HISTORY_KEY);
-      if (stored) setHistory(JSON.parse(stored));
-    }
+    // Check auth status
+    supabase.auth.getSession().then(async ({ data }) => {
+      const currentUser = data?.session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) {
+        const supabaseHistory = await fetchHistoryFromSupabase(currentUser.id);
+        setHistory(supabaseHistory);
+      }
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) {
+        const supabaseHistory = await fetchHistoryFromSupabase(currentUser.id);
+        setHistory(supabaseHistory);
+      } else {
+        setHistory([]);
+      }
+    });
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
   }, []);
 
   // Keep transcript in sync with liveTranscript unless viewing history
@@ -77,16 +111,23 @@ const App = () => {
       const data = await res.json();
       setFeedback(data.feedback);
       setTranscript(liveTranscript);
-      // Save to history
-      const newEntry = {
-        dateTime,
-        transcript: liveTranscript,
-        feedback: data.feedback
-      };
-      const updatedHistory = [newEntry, ...history].slice(0, 20); // keep last 20
-      setHistory(updatedHistory);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem(HISTORY_KEY, JSON.stringify(updatedHistory));
+      // Save to Supabase history
+      if (user) {
+        const { error } = await supabase.from('history').insert([
+          {
+            user_id: user.id,
+            date_time: dateTime,
+            transcript: liveTranscript,
+            feedback: data.feedback
+          }
+        ]);
+        if (error) {
+          console.error('Error saving feedback to Supabase:', error);
+        } else {
+          // Fetch updated history from Supabase
+          const supabaseHistory = await fetchHistoryFromSupabase(user.id);
+          setHistory(supabaseHistory);
+        }
       }
     } catch (err) {
       setFeedback("Error getting feedback.");
@@ -144,7 +185,29 @@ const App = () => {
     return result;
   }
 
+  // Function to clear all history for the current user from Supabase
+  const onClearHistory = async () => {
+    if (user) {
+      const { error } = await supabase.from('history').delete().eq('user_id', user.id);
+      if (error) {
+        console.error('Error deleting history from Supabase:', error);
+      } else {
+        setHistory([]);
+      }
+    }
+  };
+
   if (!isClient) return null;
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-neutral-900 flex flex-col items-center justify-center py-8 px-2">
+        <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg p-8 flex flex-col items-center">
+          <h2 className="text-xl font-bold mb-4 text-red-700">Please sign in to use AI Coach</h2>
+          <GoogleLoginButton />
+        </div>
+      </div>
+    );
+  }
   if (!browserSupportsSpeechRecognition) {
     return <span>Browser doesn't support speech recognition.</span>;
   }
@@ -161,7 +224,8 @@ const App = () => {
         setFeedback={setFeedback}
         setDateTime={setDateTime}
         setHistory={setHistory}
-        HISTORY_KEY={HISTORY_KEY}
+        onClearHistory={onClearHistory}
+        user={user}
       />
       <div className="w-full max-w-2xl flex justify-end text-xs text-neutral-400 mb-2">
         <span>{dateTime}</span>
