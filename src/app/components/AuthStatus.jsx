@@ -4,6 +4,7 @@ import GoogleLoginButton from './GoogleLoginButton';
 
 const AuthStatus = () => {
   const [user, setUser] = useState(null);
+  const [accessToken, setAccessToken] = useState(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -20,6 +21,14 @@ const AuthStatus = () => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
   };
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      const session = await supabase.auth.getSession();
+      setAccessToken(session.data.session?.provider_token || null);
+    };
+    fetchToken();
+  }, []);
 
   if (user) {
     return (
