@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: linear-gradient(135deg, #f8fafc 0%, #e0e7ef 100%);
   --foreground: #171717;
+  --accent: #6366f1;
+  --accent-hover: #4338ca;
+  --card-bg: #fff;
+  --card-bg-dark: #18181b;
+  --shadow: 0 4px 24px 0 rgba(0,0,0,0.08);
+  --radius: 1.25rem;
 }
 
 @theme inline {
@@ -14,13 +20,40 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: linear-gradient(135deg, #18181b 0%, #23272f 100%);
     --foreground: #ededed;
+    --card-bg: #23272f;
+    --card-bg-dark: #18181b;
+    --shadow: 0 4px 24px 0 rgba(0,0,0,0.32);
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Geist', 'Inter', 'Roboto', Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  transition: background 0.4s;
+}
+
+button, input, textarea, select {
+  font-family: inherit;
+  border-radius: var(--radius);
+  transition: box-shadow 0.2s, background 0.2s, color 0.2s;
+}
+
+button:focus, input:focus, textarea:focus, select:focus {
+  outline: 2px solid var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-hover);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  background: #e5e7eb;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
 }

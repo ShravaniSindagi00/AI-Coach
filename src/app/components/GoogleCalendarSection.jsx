@@ -8,6 +8,7 @@ const GoogleCalendarSection = () => {
   const [error, setError] = useState(null);
   const [newEvent, setNewEvent] = useState({ summary: '', start: '', end: '' });
   const [creating, setCreating] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
 
   // Fetch access token
   useEffect(() => {
@@ -20,7 +21,7 @@ const GoogleCalendarSection = () => {
 
   // Fetch events
   useEffect(() => {
-    if (!accessToken) return;
+    if (!accessToken || !showCalendar) return;
     const fetchEvents = async () => {
       setLoading(true);
       setError(null);
@@ -41,7 +42,7 @@ const GoogleCalendarSection = () => {
       setLoading(false);
     };
     fetchEvents();
-  }, [accessToken, creating]);
+  }, [accessToken, creating, showCalendar]);
 
   // Handle new event creation
   const handleCreateEvent = async (e) => {
@@ -79,63 +80,83 @@ const GoogleCalendarSection = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl bg-white dark:bg-neutral-800 rounded-xl shadow-lg p-6 mt-6">
-      <h3 className="text-lg font-bold mb-4 text-blue-700 dark:text-blue-300">Google Calendar Events</h3>
-      {loading ? (
-        <div>Loading events...</div>
-      ) : error ? (
-        <div className="text-red-600 mb-2">{error}</div>
-      ) : (
-        <ul className="mb-4">
-          {events.length === 0 && <li className="text-neutral-500">No upcoming events.</li>}
-          {events.map((event) => (
-            <li key={event.id} className="mb-2">
-              <span className="font-semibold">{event.summary}</span>
-              <br />
-              <span className="text-xs text-neutral-500">
-                {event.start?.dateTime ? new Date(event.start.dateTime).toLocaleString() : ''}
-              </span>
-            </li>
-          ))}
-        </ul>
-      )}
-      <form onSubmit={handleCreateEvent} className="space-y-2">
-        <div>
-          <input
-            type="text"
-            placeholder="Event title"
-            value={newEvent.summary}
-            onChange={e => setNewEvent(ev => ({ ...ev, summary: e.target.value }))}
-            className="w-full px-2 py-1 rounded border"
-            required
-          />
-        </div>
-        <div>
-          <input
-            type="datetime-local"
-            value={newEvent.start}
-            onChange={e => setNewEvent(ev => ({ ...ev, start: e.target.value }))}
-            className="w-full px-2 py-1 rounded border"
-            required
-          />
-        </div>
-        <div>
-          <input
-            type="datetime-local"
-            value={newEvent.end}
-            onChange={e => setNewEvent(ev => ({ ...ev, end: e.target.value }))}
-            className="w-full px-2 py-1 rounded border"
-            required
-          />
-        </div>
-        <button
-          type="submit"
-          className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md"
-          disabled={creating}
-        >
-          {creating ? 'Creating...' : 'Create Event'}
-        </button>
-      </form>
+    <div className="w-full max-w-2xl bg-white/80 dark:bg-neutral-900/80 rounded-3xl shadow-2xl p-10 mt-8 border-2 border-[var(--accent)] backdrop-blur-md animate-fade-in">
+      <button
+        className="mb-6 px-6 py-3 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white rounded-xl font-semibold shadow flex items-center gap-2 transition-all"
+        onClick={() => setShowCalendar(v => !v)}
+      >
+        {showCalendar ? 'Hide Calendar' : 'Show Calendar'}
+      </button>
+      {showCalendar && <>
+        <h3 className="text-2xl font-bold mb-6 text-blue-700 dark:text-blue-300 flex items-center gap-2">
+          Google Calendar Events
+        </h3>
+        {loading ? (
+          <div>Loading events...</div>
+        ) : error ? (
+          <div className="text-red-600 mb-2">{error}</div>
+        ) : (
+          <ul className="mb-6">
+            {events.length === 0 && <li className="text-neutral-500">No upcoming events.</li>}
+            {events.map((event) => (
+              <li key={event.id} className="mb-4 p-3 rounded-xl bg-blue-50/60 dark:bg-neutral-800/60 shadow flex flex-col">
+                <span className="font-semibold text-lg text-blue-900 dark:text-blue-200">
+                  {event.summary}
+                </span>
+                <span className="text-xs text-neutral-500 mt-1">
+                  {event.start?.dateTime ? new Date(event.start.dateTime).toLocaleString() : ''}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+        <form onSubmit={handleCreateEvent} className="space-y-4 bg-blue-100/60 dark:bg-neutral-900/60 p-6 rounded-xl shadow-inner">
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-blue-900 dark:text-blue-200">
+              Event title
+            </label>
+            <input
+              type="text"
+              placeholder="Event title"
+              value={newEvent.summary}
+              onChange={e => setNewEvent(ev => ({ ...ev, summary: e.target.value }))}
+              className="w-full px-3 py-2 rounded-lg border border-blue-300 focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)] bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+              required
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-blue-900 dark:text-blue-200">
+              Start time
+            </label>
+            <input
+              type="datetime-local"
+              value={newEvent.start}
+              onChange={e => setNewEvent(ev => ({ ...ev, start: e.target.value }))}
+              className="w-full px-3 py-2 rounded-lg border border-blue-300 focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)] bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+              required
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-blue-900 dark:text-blue-200">
+              End time
+            </label>
+            <input
+              type="datetime-local"
+              value={newEvent.end}
+              onChange={e => setNewEvent(ev => ({ ...ev, end: e.target.value }))}
+              className="w-full px-3 py-2 rounded-lg border border-blue-300 focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)] bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold shadow transition-all"
+            disabled={creating}
+          >
+            {creating ? 'Creating...' : 'Create Event'}
+          </button>
+        </form>
+      </>}
     </div>
   );
 };
