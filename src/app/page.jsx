@@ -3,6 +3,12 @@ import "./globals.css";
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import useClipboard from "react-use-clipboard";
 import { useState, useEffect } from "react";
+import Instructions from "./components/Instructions";
+import LogoHeader from "./components/LogoHeader";
+import HistorySection from "./components/HistorySection";
+import TranscriptCard from "./components/TranscriptCard";
+import ControlButtons from "./components/ControlButtons";
+import FeedbackSection from "./components/FeedbackSection";
 
 const HISTORY_KEY = 'ai_coach_history';
 
@@ -144,125 +150,45 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-neutral-900 flex flex-col items-center py-8 px-2">
-      {/* Instructions */}
-      <div className="w-full max-w-2xl mb-4">
-        <div className="bg-yellow-100 text-yellow-800 rounded p-2 text-sm mb-2">
-          <b>Tip:</b> For best results, use a headset or dedicated microphone in a quiet environment.
-        </div>
-      </div>
-      {/* History Section */}
-      <div className="w-full max-w-2xl mb-4">
-        <button
-          className="mb-2 px-4 py-2 bg-gray-200 dark:bg-neutral-700 text-neutral-800 dark:text-white rounded-md"
-          onClick={() => setShowHistory((v) => !v)}
-        >
-          {showHistory ? 'Hide' : 'Show'} History
-        </button>
-        {showHistory && (
-          <div className="bg-white dark:bg-neutral-800 rounded-lg shadow p-4 max-h-64 overflow-y-auto">
-            {history.length === 0 && <div className="text-neutral-500">No history yet.</div>}
-            {history.length > 0 && (
-              <button
-                className="mb-2 px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm float-right"
-                onClick={() => {
-                  setHistory([]);
-                  if (typeof window !== 'undefined') {
-                    localStorage.removeItem(HISTORY_KEY);
-                  }
-                }}
-              >
-                Delete History
-              </button>
-            )}
-            {history.map((item, idx) => (
-              <div
-                key={idx}
-                className="border-b border-neutral-200 dark:border-neutral-700 py-2 cursor-pointer hover:bg-blue-50 dark:hover:bg-neutral-700 rounded"
-                onClick={() => {
-                  setTranscript(item.transcript);
-                  setFeedback(item.feedback);
-                  setDateTime(item.dateTime);
-                  setShowHistory(false);
-                }}
-              >
-                <div className="text-xs text-neutral-500">{item.dateTime}</div>
-                <div className="truncate text-sm text-neutral-800 dark:text-neutral-200">{item.transcript.slice(0, 60)}{item.transcript.length > 60 ? '...' : ''}</div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-      {/* Date/Time Header */}
+      <Instructions />
+      <HistorySection
+        history={history}
+        showHistory={showHistory}
+        setShowHistory={setShowHistory}
+        setTranscript={setTranscript}
+        setFeedback={setFeedback}
+        setDateTime={setDateTime}
+        setHistory={setHistory}
+        HISTORY_KEY={HISTORY_KEY}
+      />
       <div className="w-full max-w-2xl flex justify-end text-xs text-neutral-400 mb-2">
         <span>{dateTime}</span>
       </div>
-      {/* Main Card */}
       <div className="w-full max-w-2xl bg-white dark:bg-neutral-800 rounded-xl shadow-lg p-8">
-        <div className="flex justify-center mb-4">
-          <img src="/logo.jpeg" alt="VocalCoach AI Logo" className="h-20 w-auto" />
-        </div>
-        <h2 className="text-2xl font-bold text-neutral-800 dark:text-white mb-2"> VocalCoach AI</h2>
-        <p className="text-neutral-600 dark:text-neutral-300 mb-4">Turn your voice into actionable communication insights</p>
-        <div
-          className="min-h-[100px] border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 rounded-md p-4 mb-4 cursor-pointer text-neutral-800 dark:text-neutral-100"
-          onClick={() => setTextToCopy(transcript)}
-        >
-          {transcript
-            ? <span dangerouslySetInnerHTML={{
-                __html: highlightTranscript(transcript, extractHighlightPhrases(feedbackSections))
-              }} />
-            : <span className="text-neutral-400">Your transcript will appear here...</span>}
-        </div>
-        <div className="flex flex-wrap gap-2 mb-6 items-center">
-          <button onClick={setCopied} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">
-            {isCopied ? 'Copied!' : 'Copy to clipboard'}
-          </button>
-          <button onClick={startListening} className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md">Start Listening</button>
-          <button onClick={stopListening} className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-md">Stop Listening</button>
-          <button onClick={getFeedback} disabled={!liveTranscript || loading} className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md disabled:opacity-50">
-            {loading ? "Getting Feedback..." : "Get Communication Feedback"}
-          </button>
-          {isRecording && (
-            <span className="ml-4 text-red-600 font-semibold animate-pulse">● Recording...</span>
-          )}
-        </div>
-        {/* Feedback Section */}
-        {feedback && (
-          <>
-            <div className="mt-6 bg-blue-50 dark:bg-neutral-900 border border-blue-200 dark:border-neutral-700 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-300 mb-4">Communication Feedback</h3>
-              <div className="space-y-4">
-                {feedbackSections.length > 0 ? feedbackSections.map(({ title, content, idx }) => (
-                  <div key={idx}>
-                    <div className="font-bold text-neutral-800 dark:text-white mb-1">{idx + 1}. {title}</div>
-                    <div className="text-neutral-700 dark:text-neutral-300 pl-4">{content}</div>
-                  </div>
-                )) : <div className="text-neutral-700 dark:text-neutral-300">{feedback}</div>}
-              </div>
-            </div>
-            {/* Download Feedback Button */}
-            <div className="flex justify-end mt-2">
-              <button
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white rounded-md"
-                onClick={() => {
-                  const blob = new Blob([
-                    `Date/Time: ${dateTime}\n\nTranscript:\n${transcript}\n\nFeedback:\n${feedback}`
-                  ], { type: 'text/plain' });
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement('a');
-                  a.href = url;
-                  a.download = `AI-Coach-Feedback-${dateTime.replace(/\W+/g, '-')}.txt`;
-                  document.body.appendChild(a);
-                  a.click();
-                  document.body.removeChild(a);
-                  URL.revokeObjectURL(url);
-                }}
-              >
-                Download Feedback
-              </button>
-            </div>
-          </>
-        )}
+        <LogoHeader />
+        <TranscriptCard
+          transcript={transcript}
+          setTextToCopy={setTextToCopy}
+          highlightTranscript={highlightTranscript}
+          extractHighlightPhrases={extractHighlightPhrases}
+          feedbackSections={feedbackSections}
+        />
+        <ControlButtons
+          setCopied={setCopied}
+          isCopied={isCopied}
+          startListening={startListening}
+          stopListening={stopListening}
+          getFeedback={getFeedback}
+          liveTranscript={liveTranscript}
+          loading={loading}
+          isRecording={isRecording}
+        />
+        <FeedbackSection
+          feedback={feedback}
+          feedbackSections={feedbackSections}
+          dateTime={dateTime}
+          transcript={transcript}
+        />
       </div>
     </div>
   );
