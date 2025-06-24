@@ -12,6 +12,7 @@ import FeedbackSection from "./components/FeedbackSection";
 import AuthStatus from "./components/AuthStatus";
 import { supabase } from "../utils/supabaseClient";
 import GoogleLoginButton from "./components/GoogleLoginButton";
+import GoogleCalendarSection from "./components/GoogleCalendarSection";
 
 const HISTORY_KEY = 'ai_coach_history';
 
@@ -256,6 +257,7 @@ const App = () => {
           transcript={transcript}
         />
       </div>
+      <GoogleCalendarSection />
     </div>
   );
 };
