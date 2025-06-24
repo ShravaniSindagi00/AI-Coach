@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.50.1",
     "assemblyai": "^4.13.2",
     "next": "15.3.3",
     "node-record-lpcm16": "^1.0.1",

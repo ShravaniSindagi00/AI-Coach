@@ -9,6 +9,7 @@ import HistorySection from "./components/HistorySection";
 import TranscriptCard from "./components/TranscriptCard";
 import ControlButtons from "./components/ControlButtons";
 import FeedbackSection from "./components/FeedbackSection";
+import AuthStatus from "./components/AuthStatus";
 
 const HISTORY_KEY = 'ai_coach_history';
 
@@ -150,6 +151,7 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-neutral-900 flex flex-col items-center py-8 px-2">
+      <AuthStatus />
       <Instructions />
       <HistorySection
         history={history}
