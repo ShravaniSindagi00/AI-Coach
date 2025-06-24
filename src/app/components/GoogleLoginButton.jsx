@@ -5,6 +5,9 @@ const GoogleLoginButton = () => {
   const handleLogin = async () => {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
+      options: {
+        scopes: 'email https://www.googleapis.com/auth/calendar'
+      }
     });
   };
 
