@@ -73,6 +73,11 @@ const GoogleCalendarSection = () => {
     setCreating(false);
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.reload(); // Force reload to clear all state
+  };
+
   return (
     <div className="w-full max-w-2xl bg-white dark:bg-neutral-800 rounded-xl shadow-lg p-6 mt-6">
       <h3 className="text-lg font-bold mb-4 text-blue-700 dark:text-blue-300">Google Calendar Events</h3>
