@@ -84,6 +84,10 @@ const App = () => {
 
   // Start listening and set timers
   const startListening = () => {
+    if (!user) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
     setIsRecording(true);
     SpeechRecognition.startListening({ continuous: true, language: 'en-IN' });
     // Auto-stop after max time
@@ -95,12 +99,21 @@ const App = () => {
 
   // Stop listening handler
   const stopListening = () => {
+    if (!user) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
     SpeechRecognition.stopListening();
     setIsRecording(false);
   };
 
   // Function to send transcript to Gemini API
   const getFeedback = async () => {
+    if (!user) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setFeedback("");
     try {

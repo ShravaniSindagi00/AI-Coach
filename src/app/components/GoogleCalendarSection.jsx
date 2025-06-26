@@ -28,7 +28,7 @@ const GoogleCalendarSection = () => {
       try {
         const now = new Date().toISOString();
         const res = await fetch(
-          `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${now}&maxResults=5&orderBy=startTime&singleEvents=true`,
+          `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${now}&maxResults=10&orderBy=startTime&singleEvents=true&conferenceDataVersion=1`,
           {
             headers: { Authorization: `Bearer ${accessToken}` },
           }
@@ -44,6 +44,19 @@ const GoogleCalendarSection = () => {
     fetchEvents();
   }, [accessToken, creating, showCalendar]);
 
+  // Helper: Get Google Meet link from event
+  const getMeetLink = (event) => {
+    if (event.conferenceData && event.conferenceData.entryPoints) {
+      const videoEntry = event.conferenceData.entryPoints.find(e => e.entryPointType === 'video');
+      if (videoEntry) return videoEntry.uri;
+    }
+    if (event.hangoutLink) return event.hangoutLink;
+    return null;
+  };
+
+  // Filter for events with a Google Meet link
+  const meetEvents = events.filter(event => getMeetLink(event));
+
   // Handle new event creation
   const handleCreateEvent = async (e) => {
     e.preventDefault();
@@ -51,7 +64,7 @@ const GoogleCalendarSection = () => {
     setCreating(true);
     setError(null);
     try {
-      const res = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+      const res = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events?conferenceDataVersion=1', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -61,6 +74,12 @@ const GoogleCalendarSection = () => {
           summary: newEvent.summary,
           start: { dateTime: new Date(newEvent.start).toISOString() },
           end: { dateTime: new Date(newEvent.end).toISOString() },
+          conferenceData: {
+            createRequest: {
+              requestId: `${Date.now()}-meet`,
+              conferenceSolutionKey: { type: 'hangoutsMeet' }
+            }
+          }
         }),
       });
       if (!res.ok) {
@@ -89,7 +108,7 @@ const GoogleCalendarSection = () => {
       </button>
       {showCalendar && <>
         <h3 className="text-2xl font-bold mb-6 text-blue-700 dark:text-blue-300 flex items-center gap-2">
-          Google Calendar Events
+          Google Meet Events
         </h3>
         {loading ? (
           <div>Loading events...</div>
@@ -97,17 +116,30 @@ const GoogleCalendarSection = () => {
           <div className="text-red-600 mb-2">{error}</div>
         ) : (
           <ul className="mb-6">
-            {events.length === 0 && <li className="text-neutral-500">No upcoming events.</li>}
-            {events.map((event) => (
-              <li key={event.id} className="mb-4 p-3 rounded-xl bg-blue-50/60 dark:bg-neutral-800/60 shadow flex flex-col">
-                <span className="font-semibold text-lg text-blue-900 dark:text-blue-200">
-                  {event.summary}
-                </span>
-                <span className="text-xs text-neutral-500 mt-1">
-                  {event.start?.dateTime ? new Date(event.start.dateTime).toLocaleString() : ''}
-                </span>
-              </li>
-            ))}
+            {meetEvents.length === 0 && <li className="text-neutral-500">No upcoming Google Meet events.</li>}
+            {meetEvents.map((event) => {
+              const meetLink = getMeetLink(event);
+              return (
+                <li key={event.id} className="mb-4 p-3 rounded-xl bg-blue-50/60 dark:bg-neutral-800/60 shadow flex flex-col">
+                  <span className="font-semibold text-lg text-blue-900 dark:text-blue-200">
+                    {event.summary}
+                  </span>
+                  <span className="text-xs text-neutral-500 mt-1">
+                    {event.start?.dateTime ? new Date(event.start.dateTime).toLocaleString() : ''}
+                  </span>
+                  {meetLink && (
+                    <a
+                      href={meetLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold text-sm w-max shadow transition-all"
+                    >
+                      Join Meeting
+                    </a>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         )}
         <form onSubmit={handleCreateEvent} className="space-y-4 bg-blue-100/60 dark:bg-neutral-900/60 p-6 rounded-xl shadow-inner">
