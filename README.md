@@ -1,12 +1,13 @@
 # VocalCoach AI
 
-**VocalCoach AI** is your personal, AI-powered communication coach. Instantly transcribe your speech, receive actionable feedback, and get professional rephrasings—all in a beautiful, user-friendly interface. Now with Google login, Google Calendar integration, and persistent user history!
+**VocalCoach AI** is your real-time communication assistant for meetings. Use it during your calls to record and transcribe your speech, then get instant, AI-powered feedback on your communication. Identify mistakes, learn from your history, and become a more effective speaker—so you don't repeat the same mistakes again.
 
 ---
 
 ## 🚀 Features
 
-- **Google Login:** Secure authentication with your Google account. 
+- **Real-time meeting feedback:** Record and transcribe your voice during meetings, then get actionable feedback on your communication.
+- **Google Login:** Secure authentication with your Google account (via Supabase Auth).
 - **Live audio-to-text:** Speak and see your words transcribed in real time.
 - **Automated feedback:** Instantly receive structured, actionable feedback on your communication.
 - **Professional rephrasing:** Get a polished version of your speech—see how you could say it better.
@@ -43,16 +44,30 @@ npm install
 
 ### 3. **Set up environment variables**
 - Create a `.env.local` file in the root directory.
+- Add the following:
+  ```
+  GEMINI_API_KEY=your_gemini_api_key
+  NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+  NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+  GOOGLE_CLIENT_ID=your_google_client_id
+  GOOGLE_CLIENT_SECRET=your_google_client_secret
+  GOOGLE_REDIRECT_URI=your_google_redirect_uri
+  ```
+- Set up your Supabase project and Google OAuth credentials as described below.
 
+### 4. **Supabase Setup**
+- Create a [Supabase](https://supabase.com/) project.
+- Enable Google provider in Supabase Auth settings.
+- Create a `history` table with columns: `id` (uuid, PK), `user_id` (uuid), `date_time` (text), `transcript` (text), `feedback` (text), `created_at` (timestamp).
+- Add your Supabase URL and anon key to `.env.local`.
 
-
-### 4. **Google OAuth Setup**
+### 5. **Google OAuth Setup**
 - Create OAuth credentials in [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
 - Add your Supabase project's callback URL as an authorized redirect URI.
 - Add your app domain to the OAuth consent screen and add test users.
 - Add your Google client ID, secret, and redirect URI to `.env.local`.
 
-### 5. **Run the development server**
+### 6. **Run the development server**
 ```bash
 npm run dev
 ```
@@ -67,6 +82,12 @@ Visit [http://localhost:3000](http://localhost:3000) to use the app.
 
 ---
 
+## 🖼️ Logo
+
+The project logo is located at `public/logo.jpeg`.  
+Feel free to replace it with your own branding!
+
+---
 
 ## 🤖 Built With
 
